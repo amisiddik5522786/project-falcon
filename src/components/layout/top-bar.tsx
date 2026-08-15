@@ -5,6 +5,15 @@ import { Button } from '#/components/ui/button.tsx'
 import { Input } from '#/components/ui/input.tsx'
 import { Switch } from '#/components/ui/switch.tsx'
 import { cn } from '#/lib/utils.ts'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+} from '#/components/ui/dropdown-menu.tsx'
+import auth from '#/lib/auth/index.ts'
+import { Spinner } from '#/components/ui/spinner.tsx'
 
 interface TopBarProps {
   onMenuToggle: () => void
@@ -43,36 +52,64 @@ export function TopBar({ onMenuToggle, isDark, onThemeToggle }: TopBarProps) {
             <Moon className="size-4 text-muted-foreground" />
           </div>
 
-          <div className="relative">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 rounded-full px-2 py-1.5"
-              onClick={() => setProfileOpen((open) => !open)}
-            >
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <UserRound className="size-4" />
-              </div>
-              <div className="hidden text-left sm:block">
-                <p className="text-sm font-medium text-foreground">Ava Carter</p>
-                <p className="text-xs text-muted-foreground">Operations Lead</p>
-              </div>
-              <ChevronDown className="size-4 text-muted-foreground" />
-            </Button>
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2 rounded-full px-2 py-1.5">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <UserRound className="size-4" />
+                  </div>
+                  <div className="hidden text-left sm:block">
+                    <p className="text-sm font-medium text-foreground">Ava Carter</p>
+                    <p className="text-xs text-muted-foreground">Operations Lead</p>
+                  </div>
+                  <ChevronDown className="size-4 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            {profileOpen && (
-              <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-border/70 bg-popover p-2 shadow-lg">
-                <p className="px-2 py-2 text-sm font-medium text-foreground">Account</p>
-                <button className="w-full rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                  Profile settings
-                </button>
-                <button className="w-full rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                  Team preferences
-                </button>
-              </div>
-            )}
+              <AccountMenuContent />
+            </DropdownMenu>
           </div>
         </div>
       </div>
     </header>
+  )
+}
+
+function AccountMenuContent() {
+  const [loading, setLoading] = useState(false)
+
+  async function handleLogout() {
+    if (loading) return
+    setLoading(true)
+    try {
+      await auth.signOut()
+      // navigate to login
+      window.location.assign('/login')
+    } catch (err) {
+      // show minimal feedback via alert for now
+      // avoid leaking details
+      // eslint-disable-next-line no-alert
+      alert('Logout failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <DropdownMenuContent align="end" sideOffset={8} className="w-48 rounded-2xl border border-border/70 bg-popover p-2 shadow-lg">
+      <DropdownMenuLabel>Account</DropdownMenuLabel>
+      <DropdownMenuItem asChild>
+        <a href="/profile" className="w-full rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground">Profile settings</a>
+      </DropdownMenuItem>
+
+      <DropdownMenuItem asChild>
+        <a href="/team-preferences" className="w-full rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground">Team preferences</a>
+      </DropdownMenuItem>
+
+      <DropdownMenuItem onSelect={handleLogout} disabled={loading} className="w-full rounded-lg px-2 py-2 text-left text-sm text-destructive">
+        {loading ? <Spinner label="Signing out" /> : 'Log out'}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
   )
 }

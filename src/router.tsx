@@ -29,3 +29,9 @@ declare module '@tanstack/react-router' {
     router: ReturnType<typeof getRouter>
   }
 }
+
+// Client-only: initialize auth on app startup. Loaded dynamically to avoid SSR.
+if (typeof window !== 'undefined' && !import.meta.env.SSR) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  import('./lib/auth/client-init').then((m) => m.startAuthClient())
+}
