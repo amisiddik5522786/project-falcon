@@ -29,7 +29,8 @@ export function AppShell({ title, description, children }: AppShellProps) {
   }, [isDark])
 
   const navItems = [
-    { label: 'Overview', href: '/', icon: LayoutDashboard, active: true },
+    { label: 'Overview', href: '/', icon: LayoutDashboard },
+    { label: 'Products', href: '/products', icon: Package },
     { label: 'Orders', href: '/orders', icon: ShoppingCart },
     { label: 'Customers', href: '/customers', icon: Users },
     { label: 'Operations', href: '/operations', icon: Settings },
