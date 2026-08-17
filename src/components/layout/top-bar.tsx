@@ -106,8 +106,22 @@ function UserNameAndRole() {
 
   return (
     <>
-      <p className="text-sm font-medium text-foreground">{name ?? 'Account'}</p>
-      <p className="text-xs text-muted-foreground">{role ?? ''}</p>
+      <div className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt="Profile avatar"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <UserRound className="size-4" />
+        )}
+      </div>
+
+      <div className="hidden text-left sm:block">
+        <p className="text-sm font-medium text-foreground">{name ?? 'Account'}</p>
+        <p className="text-xs text-muted-foreground">{role ?? ''}</p>
+      </div>
     </>
   )
 }
@@ -147,20 +161,7 @@ export function TopBar({ onMenuToggle, isDark, onThemeToggle }: TopBarProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 rounded-full px-2 py-1.5">
-                  <div className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt="Profile avatar"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <UserRound className="size-4" />
-                    )}
-                  </div>
-                  <div className="hidden text-left sm:block">
-                    <UserNameAndRole />
-                  </div>
+                  <UserNameAndRole />
                   <ChevronDown className="size-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
